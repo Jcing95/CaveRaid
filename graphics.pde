@@ -17,7 +17,7 @@ int PANESIZE;
 
 void initgfx(){
   textureMode(NORMAL);
-  PANESIZE = width/10;
+  PANESIZE = (int)sqrt((width*width)+(height*height))/10;
   shm = new ShapeManager();
   //pane = new TileShape();
   println("initialized gfx_");

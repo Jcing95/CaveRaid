@@ -13,13 +13,18 @@ int CHUNKSIZE = 64;
 class Chunk {
 
   int x,y;
-
+  boolean active;
   Tile[][] tiles;
+
+  @Override
+  public int hashCode(){
+    return (""+x+"C"+y).hashCode();
+  }
 
   public Chunk(Point p){
     x = (int)p.x*CHUNKSIZE;
     y = (int)p.y*CHUNKSIZE;
-
+    active = true;
     tiles = new Tile[CHUNKSIZE][CHUNKSIZE];
     for(int i=0; i<CHUNKSIZE; i++){
       for(int j =0; j<CHUNKSIZE; j++){
@@ -59,16 +64,17 @@ class CaveLoader implements Runnable{
 
   float UPS = 1;
 
-  boolean running;
+  boolean running, initialized;
 
   PVector loaded;
 
   HashMap<Point,Chunk> loadedChunks;
 
   public CaveLoader(){
+    initialized = false;
     loaded = new PVector(0,0);
     loadedChunks = new HashMap<Point,Chunk>();
-    load();
+    //load();
     running = true;
     Thread th = new Thread(this);
     th.start();
@@ -77,7 +83,7 @@ class CaveLoader implements Runnable{
 
 
   void update(){
-    println("cam: "+ cam.tile().x + "|" + cam.tile().y + "   " + loaded + "  floored: x" + floor(cam.tile().x/CHUNKSIZE) + " y" + floor(cam.tile().y/CHUNKSIZE));
+    //println("cam: "+ cam.tile().x + "|" + cam.tile().y + "   " + loaded + "  floored: x" + floor(cam.tile().x/CHUNKSIZE) + " y" + floor(cam.tile().y/CHUNKSIZE));
     if(floor(cam.tile().x/CHUNKSIZE) != loaded.x || floor(cam.tile().y/CHUNKSIZE) != loaded.y) {
       //&&  floor(cam.tile().x)/CHUNKSIZE <= loaded.x+1 && floor(cam.tile().y)/CHUNKSIZE <= loaded.y+1 )){
       loaded = new PVector(floor(cam.tile().x/CHUNKSIZE),floor(cam.tile().y/CHUNKSIZE));
@@ -167,7 +173,8 @@ class CaveLoader implements Runnable{
   }
 
   public void run(){
-
+    load();
+    initialized = true;
     int last = millis();
     while (running){
       if(millis()-last>1000/UPS){

@@ -1,7 +1,15 @@
-class Raider {
+class Raider extends Entity {
 
-  int posX, posY;
+  public Raider(Chunk c, int x, int y){
+    super(c);
+  }
 
+  void tick(){
 
+  }
+
+  void paint(){
+
+  }
 
 }

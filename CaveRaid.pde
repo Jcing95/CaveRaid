@@ -11,9 +11,9 @@ KeyBoard kb;
 Menu menu;
 
 void settings(){
-  size(1024,768,P3D);
+  //size(778,600,P3D);
   //size(1280,720,P3D);
-  //fullScreen(P3D);
+  fullScreen(P3D);
 }
 
 PShape testShape;

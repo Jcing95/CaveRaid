@@ -39,7 +39,7 @@ class Point {
 //  #    # #    # #    # #      #   #  #    #
 //   ####  #    # #    # ###### #    # #    #
 
-Camera cam = new Camera(0,0,-1000);
+Camera cam = new Camera(0,0,-200);
 
 class Camera {
 
@@ -49,7 +49,8 @@ class Camera {
   int minDistance, maxDistance;
   int speed = 25;
   float boost = 5;
-  float maxDist = 10000;
+  float maxDist = 1000;
+  float minDist = 10;
 
   float xRot, zRot;
 
@@ -110,11 +111,11 @@ class Camera {
   }
 
   public void zoom(float val){
-    pos.z -= val*65;
+    pos.z -= val*pos.z/10;
     if(pos.z<-maxDist)
       pos.z=-maxDist;
-    if(pos.z > -200){
-      pos.z=-200;
+    if(pos.z > -minDist){
+      pos.z=-minDist;
     }
   }
 
