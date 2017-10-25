@@ -7,12 +7,15 @@ Game game;
 Cave cave;
 WorldGen wg;
 KeyBoard kb;
+EntityManager entities;
 
 Menu menu;
 
 Tile camTile;
 
 float zOffset;
+
+Raider test;
 
 void settings(){
   //size(778,600,P3D);
@@ -38,8 +41,10 @@ void setup(){
   kb = new KeyBoard();
   wg = new WorldGen();
   cave = new Cave();
+  entities = new EntityManager();
   game = new Game();
   menu = new Menu();
+
 }
 
 void draw(){
@@ -57,15 +62,18 @@ void draw(){
         zOffset+= PANESIZE*0.02;
       if(camTile.z*PANESIZE < zOffset)
         zOffset-= PANESIZE*0.02;
+
+      if(test == null)
+        test = new Raider(camTile, new Point(0,0));
     }
     translate(cam.pos.x,cam.pos.y,cam.pos.z-zOffset);
     cave.paint();
-    if(camTile != null){
-    translate(camTile.x*PANESIZE*2,camTile.y*PANESIZE*2,5+camTile.z*PANESIZE);
+    entities.finishDrawing();
+    //translate(camTile.x*PANESIZE*2,camTile.y*PANESIZE*2,5+camTile.z*PANESIZE);
     //fill(#ff0000);
     //ellipse(PANESIZE,PANESIZE,PANESIZE/2,PANESIZE/2);
     //ellipse(-cam.pos.x+PANESIZE/4,-cam.pos.y+PANESIZE/4,PANESIZE/2,PANESIZE/2);
-  }
+
     //shape(testShape,-cam.pos.x,-cam.pos.y);
     //image(imgt, 200,200);
     //scale(100);
@@ -118,6 +126,18 @@ void tick(){
     }
     if(kb.pressed(kb.MOVE_RIGHT)){
       cam.moveRight();
+    }
+    if(kb.pressed(kb.ROTATE_RIGHT)){
+      cam.rotate(-1,0);
+    }
+    if(kb.pressed(kb.ROTATE_LEFT)){
+      cam.rotate(1,0);
+    }
+    if(kb.pressed(kb.ROTATE_UP)){
+      cam.rotate(0,-1);
+    }
+    if(kb.pressed(kb.ROTATE_DOWN)){
+      cam.rotate(0,1);
     }
     //println("" + noise(-100,-100) + " " + noise(100,100));
 }

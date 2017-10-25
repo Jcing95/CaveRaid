@@ -271,33 +271,7 @@ int camDistance(int x, int y){
 int VIEWDISTANCE = 75;
 
 void pane(int x, int y, int z, int type, int orientation, Material mat, int col){
-  if(!mat.initialized){
-    return;
-  }
-  if(!((screenX((x+1)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) > 0 && screenX((x+1)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) < width &&
-      screenY((x+1)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) > 0 && screenY((x+1)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) < height) ||
-
-      (screenX((x+1)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) > 0 && screenX((x+1)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) < width &&
-      screenY((x+1)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) > 0 && screenY((x+1)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) < height) ||
-
-      (screenX((x-1)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) > 0 && screenX((x-1)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) < width &&
-      screenY((x-1)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) > 0 && screenY((x-1)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) < height) ||
-
-      (screenX((x-1)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) > 0 && screenX((x-1)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) < width &&
-      screenY((x-1)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) > 0 && screenY((x-1)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) < height) ||
-
-      (screenX((x+1)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) > 0 && screenX((x+1)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) < width &&
-      screenY((x+1)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) > 0 && screenY((x+1)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) < height) ||
-
-      (screenX((x)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) > 0 && screenX((x)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) < width &&
-      screenY((x)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) > 0 && screenY((x)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) < height) ||
-
-      (screenX((x)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) > 0 && screenX((x)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) < width &&
-      screenY((x)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) > 0 && screenY((x)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) < height) ||
-
-      (screenX((x-1)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) > 0 && screenX((x-1)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) < width &&
-      screenY((x-1)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) > 0 && screenY((x-1)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) < height)) ||
-      camDistance(x*PANESIZE,y*PANESIZE) > (height/2.0) / tan(PI/3.0/2.0) * 10.0){
+  if(!mat.initialized || camDistance(x*PANESIZE,y*PANESIZE) > (height/2.0) / tan(PI/3.0/2.0) * 10.0){
     return;
   }
   pushMatrix();

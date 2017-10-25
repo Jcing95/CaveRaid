@@ -138,9 +138,16 @@ class KeyBoard {
   int MOVE_LEFT = 1;
   int MOVE_RIGHT = 2;
   int MOVE_BACK = 3;
-  int BOOST = 4;
 
-  int LASTKEY = 5;
+  int ROTATE_RIGHT = 4;
+  int ROTATE_LEFT = 5;
+  int ROTATE_UP = 6;
+  int ROTATE_DOWN = 7;
+
+  int BOOST = 8;
+
+
+  int LASTKEY = 9;
 
   boolean[] keys;
   int[] chars;
@@ -154,6 +161,10 @@ class KeyBoard {
     chars[MOVE_LEFT] = KeyEvent.VK_A;
     chars[MOVE_RIGHT] = KeyEvent.VK_D;
     chars[MOVE_BACK] = KeyEvent.VK_S;
+    chars[ROTATE_RIGHT] = KeyEvent.VK_RIGHT;
+    chars[ROTATE_LEFT] = KeyEvent.VK_LEFT;
+    chars[ROTATE_UP] = KeyEvent.VK_UP;
+    chars[ROTATE_DOWN] = KeyEvent.VK_DOWN;
     chars[BOOST] = KeyEvent.VK_SHIFT;
     println("Keyboard set up!_");
   }

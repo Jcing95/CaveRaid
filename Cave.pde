@@ -371,8 +371,8 @@ class Tile {
   }
 
   Point occupy(Entity e, Point subPos){
-    int x = subPos.x %= 1;
-    int y = subPos.y %= 1;
+    int x = subPos.x %= 2;
+    int y = subPos.y %= 2;
     if(x == 0 && y == 0)
       entitiesTL.add(e);
     if(x == 0 && y == 1)
@@ -381,6 +381,7 @@ class Tile {
       entitiesBL.add(e);
     if(x == 1 && y == 1)
       entitiesBR.add(e);
+      println("entitiy added " + x + " " + y + " " + entitiesTL.size());
     return new Point(x,y);
   }
 
@@ -398,6 +399,13 @@ class Tile {
       entitiesBR.remove(e);
   }
 
+  boolean isOnScreen(int x, int y, int z){
+    return screenX(x*2*PANESIZE, y*2*PANESIZE, z*PANESIZE) > 0 &&
+    screenX(x*2*PANESIZE, y*2*PANESIZE, z*PANESIZE) < width &&
+    screenY(x*2*PANESIZE, y*2*PANESIZE, z*PANESIZE) > 0 &&
+    screenY(x*2*PANESIZE, y*2*PANESIZE, z*PANESIZE) < height;
+  }
+
   //
   //  ##### # #      ######         #####    ##   # #    # #####
   //    #   # #      #              #    #  #  #  # ##   #   #
@@ -406,20 +414,9 @@ class Tile {
   //    #   # #      #              #      #    # # #   ##   #
   //    #   # ###### ###### ####### #      #    # # #    #   #
   public void paint(){
-    if(!((screenX(x*2*PANESIZE, y*2*PANESIZE, z*PANESIZE) > 0 && screenX(x*2*PANESIZE, y*2*PANESIZE, z*PANESIZE) < width &&
-      screenY(x*2*PANESIZE, y*2*PANESIZE, z*PANESIZE) > 0 && screenY(x*2*PANESIZE, y*2*PANESIZE, z*PANESIZE) < height) ||
-
-      (screenX(x*2*PANESIZE+2*PANESIZE, y*2*PANESIZE+2*PANESIZE, z*PANESIZE) > 0 && screenX(x*2*PANESIZE+2*PANESIZE, y*2*PANESIZE+2*PANESIZE, z*PANESIZE) < width &&
-      screenY(x*2*PANESIZE+2*PANESIZE, y*2*PANESIZE+2*PANESIZE, z*PANESIZE) > 0 && screenY(x*2*PANESIZE+2*PANESIZE, y*2*PANESIZE+2*PANESIZE, z*PANESIZE) < height) ||
-
-      (screenX(x*2*PANESIZE-2*PANESIZE, y*2*PANESIZE-2*PANESIZE, z*PANESIZE) > 0 && screenX(x*2*PANESIZE-2*PANESIZE, y*2*PANESIZE-2*PANESIZE, z*PANESIZE) < width &&
-      screenY(x*2*PANESIZE-2*PANESIZE, y*2*PANESIZE-2*PANESIZE, z*PANESIZE) > 0 && screenY(x*2*PANESIZE-2*PANESIZE, y*2*PANESIZE-2*PANESIZE, z*PANESIZE) < height) ||
-
-      (screenX(x*2*PANESIZE+2*PANESIZE, y*2*PANESIZE-2*PANESIZE, z*PANESIZE) > 0 && screenX(x*2*PANESIZE+2*PANESIZE, y*2*PANESIZE-2*PANESIZE, z*PANESIZE) < width &&
-      screenY(x*2*PANESIZE+2*PANESIZE, y*2*PANESIZE-2*PANESIZE, z*PANESIZE) > 0 && screenY(x*2*PANESIZE+2*PANESIZE, y*2*PANESIZE-2*PANESIZE, z*PANESIZE) < height) ||
-
-      (screenX(x*2*PANESIZE-2*PANESIZE, y*2*PANESIZE+2*PANESIZE, z*PANESIZE) > 0 && screenX(x*2*PANESIZE-2*PANESIZE, y*2*PANESIZE+2*PANESIZE, z*PANESIZE) < width &&
-      screenY(x*2*PANESIZE-2*PANESIZE, y*2*PANESIZE+2*PANESIZE, z*PANESIZE) > 0 && screenY(x*2*PANESIZE-2*PANESIZE, y*2*PANESIZE+2*PANESIZE, z*PANESIZE) < height)))
+    if(!(isOnScreen(x,y,z) || isOnScreen(x+2,y,z) || isOnScreen(x,y+2,z) || isOnScreen(x-2,y,z)
+          || isOnScreen(x,y-2,z) || isOnScreen(x+2,y+2,z) || isOnScreen(x-2,y+2,z) || isOnScreen(x-2,y-2,z)
+          || isOnScreen(x+2,y-2,z)))
         return;
     pane(x*2,y*2,z,TILE_FLOOR,NORTH,mat[0],tint);
     if(down[0])
@@ -439,6 +436,14 @@ class Tile {
       else
       pane((x*2)+1,(y*2)+1,z,types[2],orientation,mat[3],tint);
     tint = 0xFFFFFFFF;
+    for(Entity e: entitiesTL)
+      e.show();
+    for(Entity e: entitiesTR)
+      e.show();
+    for(Entity e: entitiesBL)
+      e.show();
+    for(Entity e: entitiesBR)
+      e.show();
   }
 
 }
