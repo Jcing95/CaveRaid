@@ -1,7 +1,7 @@
 class Raider extends Entity {
 
-  public Raider(Chunk c, int x, int y){
-    super(c);
+  public Raider(Tile t, Point subPos){
+    super(t,subPos);
   }
 
   void tick(){

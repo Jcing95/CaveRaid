@@ -28,7 +28,7 @@ class Chunk {
     tiles = new Tile[CHUNKSIZE][CHUNKSIZE];
     for(int i=0; i<CHUNKSIZE; i++){
       for(int j =0; j<CHUNKSIZE; j++){
-        tiles[i][j] = new Tile(x+i,y+j);
+        tiles[i][j] = new Tile(x+i,y+j,p);
       }
     }
   }
@@ -164,7 +164,7 @@ class CaveLoader implements Runnable{
   }
 
   void paintCave(){
-    //println(loadedChunks.keySet());
+    //println(loadedChunks.keySet().size());
     for(Object p: loadedChunks.keySet()){
       Chunk c = loadedChunks.get((Point)p);
       if(c != null)
@@ -215,7 +215,7 @@ class Cave {
   //  println("x" + chunkAt(x/CHUNKSIZE) + " y" + chunkAt(y/CHUNKSIZE) + "   " + world.get(new Point(x/CHUNKSIZE,y/CHUNKSIZE)));
     if(loader.loadedChunks.get(new Point(chunkAt(x/CHUNKSIZE),chunkAt(y/CHUNKSIZE))) != null)
       return loader.loadedChunks.get(new Point(chunkAt(x/CHUNKSIZE),chunkAt(y/CHUNKSIZE))).getTile((int)x%CHUNKSIZE,(int)y%CHUNKSIZE);
-    return new Tile(0,0);
+    return null;
   }
 
   void paint(){
@@ -244,15 +244,30 @@ class Tile {
   int[] types;
   boolean[] down;
   int orientation;
+  Point chunk;
 
-  public Tile (int x, int y) {
+  color tint;
 
+  ArrayList<Entity> entitiesTL;
+  ArrayList<Entity> entitiesTR;
+  ArrayList<Entity> entitiesBL;
+  ArrayList<Entity> entitiesBR;
+
+  public Tile (int x, int y, Point chunk) {
     this.x = x;
     this.y = y;
     this.z = wg.getZ(x,y);
+    this.chunk = chunk;
     orientation = NORTH;
-    mat = new Material[4];
 
+    tint = 0xFFFFFFFF;
+
+    entitiesTL = new ArrayList<Entity>(2);
+    entitiesTR = new ArrayList<Entity>(2);
+    entitiesBL = new ArrayList<Entity>(2);
+    entitiesBR = new ArrayList<Entity>(2);
+
+    mat = new Material[4];
     mat[0] = wg.getMat(x,y);
     mat[1] = wg.getMat(x+0.5,y);
     mat[2] = wg.getMat(x,y+0.5);
@@ -345,8 +360,42 @@ class Tile {
       }
       return;
     }
+  }
 
+  Point getChunk(){
+    return chunk;
+  }
 
+  void tint(color col){
+    tint = col;
+  }
+
+  Point occupy(Entity e, Point subPos){
+    int x = subPos.x %= 1;
+    int y = subPos.y %= 1;
+    if(x == 0 && y == 0)
+      entitiesTL.add(e);
+    if(x == 0 && y == 1)
+      entitiesTR.add(e);
+    if(x == 1 && y == 0)
+      entitiesBL.add(e);
+    if(x == 1 && y == 1)
+      entitiesBR.add(e);
+    return new Point(x,y);
+  }
+
+  void removeEntity(Entity e){
+    Point subPos = e.getSubPos();
+    int x = subPos.x %= 1;
+    int y = subPos.y %= 1;
+    if(x == 0 && y == 0)
+      entitiesTL.remove(e);
+    if(x == 0 && y == 1)
+      entitiesTR.remove(e);
+    if(x == 1 && y == 0)
+      entitiesBL.remove(e);
+    if(x == 1 && y == 1)
+      entitiesBR.remove(e);
   }
 
   //
@@ -357,23 +406,39 @@ class Tile {
   //    #   # #      #              #      #    # # #   ##   #
   //    #   # ###### ###### ####### #      #    # # #    #   #
   public void paint(){
-    pane(x*2,y*2,z,TILE_FLOOR,NORTH,mat[0]);
+    if(!((screenX(x*2*PANESIZE, y*2*PANESIZE, z*PANESIZE) > 0 && screenX(x*2*PANESIZE, y*2*PANESIZE, z*PANESIZE) < width &&
+      screenY(x*2*PANESIZE, y*2*PANESIZE, z*PANESIZE) > 0 && screenY(x*2*PANESIZE, y*2*PANESIZE, z*PANESIZE) < height) ||
+
+      (screenX(x*2*PANESIZE+2*PANESIZE, y*2*PANESIZE+2*PANESIZE, z*PANESIZE) > 0 && screenX(x*2*PANESIZE+2*PANESIZE, y*2*PANESIZE+2*PANESIZE, z*PANESIZE) < width &&
+      screenY(x*2*PANESIZE+2*PANESIZE, y*2*PANESIZE+2*PANESIZE, z*PANESIZE) > 0 && screenY(x*2*PANESIZE+2*PANESIZE, y*2*PANESIZE+2*PANESIZE, z*PANESIZE) < height) ||
+
+      (screenX(x*2*PANESIZE-2*PANESIZE, y*2*PANESIZE-2*PANESIZE, z*PANESIZE) > 0 && screenX(x*2*PANESIZE-2*PANESIZE, y*2*PANESIZE-2*PANESIZE, z*PANESIZE) < width &&
+      screenY(x*2*PANESIZE-2*PANESIZE, y*2*PANESIZE-2*PANESIZE, z*PANESIZE) > 0 && screenY(x*2*PANESIZE-2*PANESIZE, y*2*PANESIZE-2*PANESIZE, z*PANESIZE) < height) ||
+
+      (screenX(x*2*PANESIZE+2*PANESIZE, y*2*PANESIZE-2*PANESIZE, z*PANESIZE) > 0 && screenX(x*2*PANESIZE+2*PANESIZE, y*2*PANESIZE-2*PANESIZE, z*PANESIZE) < width &&
+      screenY(x*2*PANESIZE+2*PANESIZE, y*2*PANESIZE-2*PANESIZE, z*PANESIZE) > 0 && screenY(x*2*PANESIZE+2*PANESIZE, y*2*PANESIZE-2*PANESIZE, z*PANESIZE) < height) ||
+
+      (screenX(x*2*PANESIZE-2*PANESIZE, y*2*PANESIZE+2*PANESIZE, z*PANESIZE) > 0 && screenX(x*2*PANESIZE-2*PANESIZE, y*2*PANESIZE+2*PANESIZE, z*PANESIZE) < width &&
+      screenY(x*2*PANESIZE-2*PANESIZE, y*2*PANESIZE+2*PANESIZE, z*PANESIZE) > 0 && screenY(x*2*PANESIZE-2*PANESIZE, y*2*PANESIZE+2*PANESIZE, z*PANESIZE) < height)))
+        return;
+    pane(x*2,y*2,z,TILE_FLOOR,NORTH,mat[0],tint);
     if(down[0])
-      pane((x*2)+1,(y*2),z-1,types[0],WEST,mat[1]);
+      pane((x*2)+1,(y*2),z-1,types[0],WEST,mat[1],tint);
       else if (types[0] == TILE_FLOOR)
-        pane((x*2)+1,(y*2),z,types[0],NORTH,mat[1]);
+        pane((x*2)+1,(y*2),z,types[0],NORTH,mat[1],tint);
       else
-        pane((x*2)+1,(y*2),z,types[0],EAST,mat[1]);
+        pane((x*2)+1,(y*2),z,types[0],EAST,mat[1],tint);
     if(down[1])
-      pane((x*2),(y*2)+1,z-1,types[1],NORTH,mat[2]);
+      pane((x*2),(y*2)+1,z-1,types[1],NORTH,mat[2],tint);
       else if(types[1] == TILE_FLOOR)
-        pane((x*2),(y*2)+1,z,types[1],NORTH,mat[2]);
+        pane((x*2),(y*2)+1,z,types[1],NORTH,mat[2],tint);
       else
-        pane((x*2),(y*2)+1,z,types[1],SOUTH,mat[2]);
+        pane((x*2),(y*2)+1,z,types[1],SOUTH,mat[2],tint);
     if(down[2])
-      pane((x*2)+1,(y*2)+1,z-1,types[2],orientation,mat[3]);
+      pane((x*2)+1,(y*2)+1,z-1,types[2],orientation,mat[3],tint);
       else
-      pane((x*2)+1,(y*2)+1,z,types[2],orientation,mat[3]);
+      pane((x*2)+1,(y*2)+1,z,types[2],orientation,mat[3],tint);
+    tint = 0xFFFFFFFF;
   }
 
 }

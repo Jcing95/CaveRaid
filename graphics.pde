@@ -270,12 +270,34 @@ int camDistance(int x, int y){
 
 int VIEWDISTANCE = 75;
 
-void pane(int x, int y, int z, int type, int orientation, Material mat){
+void pane(int x, int y, int z, int type, int orientation, Material mat, int col){
   if(!mat.initialized){
     return;
   }
-  if(!(screenX((x)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) >= -4*PANESIZE && screenX((x-1)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) <= width + 4*PANESIZE &&
-      screenY((x)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) >= -4*PANESIZE && screenY((x)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) <= height + 4*PANESIZE) || camDistance(x*PANESIZE,y*PANESIZE) > VIEWDISTANCE*PANESIZE ){
+  if(!((screenX((x+1)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) > 0 && screenX((x+1)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) < width &&
+      screenY((x+1)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) > 0 && screenY((x+1)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) < height) ||
+
+      (screenX((x+1)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) > 0 && screenX((x+1)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) < width &&
+      screenY((x+1)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) > 0 && screenY((x+1)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) < height) ||
+
+      (screenX((x-1)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) > 0 && screenX((x-1)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) < width &&
+      screenY((x-1)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) > 0 && screenY((x-1)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) < height) ||
+
+      (screenX((x-1)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) > 0 && screenX((x-1)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) < width &&
+      screenY((x-1)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) > 0 && screenY((x-1)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) < height) ||
+
+      (screenX((x+1)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) > 0 && screenX((x+1)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) < width &&
+      screenY((x+1)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) > 0 && screenY((x+1)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) < height) ||
+
+      (screenX((x)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) > 0 && screenX((x)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) < width &&
+      screenY((x)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) > 0 && screenY((x)*PANESIZE,(y-1)*PANESIZE,(z)*PANESIZE) < height) ||
+
+      (screenX((x)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) > 0 && screenX((x)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) < width &&
+      screenY((x)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) > 0 && screenY((x)*PANESIZE,(y+1)*PANESIZE,(z)*PANESIZE) < height) ||
+
+      (screenX((x-1)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) > 0 && screenX((x-1)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) < width &&
+      screenY((x-1)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) > 0 && screenY((x-1)*PANESIZE,(y)*PANESIZE,(z)*PANESIZE) < height)) ||
+      camDistance(x*PANESIZE,y*PANESIZE) > (height/2.0) / tan(PI/3.0/2.0) * 10.0){
     return;
   }
   pushMatrix();
@@ -285,6 +307,7 @@ void pane(int x, int y, int z, int type, int orientation, Material mat){
   translate(-PANESIZE/2,-PANESIZE/2);
   translate(0,0,z*PANESIZE);
   fill(255);
+  shm.get(mat,type).setTint(col);
   shape(shm.get(mat,type),0,0);
   popMatrix();
 

@@ -68,6 +68,10 @@ class Camera {
   public void rotate(int x, int y){
     zRot -= x;
     xRot += y;
+    if(xRot > 75)
+      xRot = 75;
+    if(xRot < 0)
+      xRot = 0;
     forward.rotate(radians(x));
     right.rotate(radians(x));
   }
@@ -111,7 +115,7 @@ class Camera {
   }
 
   public void zoom(float val){
-    pos.z -= val*pos.z/10;
+    pos.z += val*pos.z/10;
     if(pos.z<-maxDist)
       pos.z=-maxDist;
     if(pos.z > -minDist){
