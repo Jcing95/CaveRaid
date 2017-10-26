@@ -1,5 +1,6 @@
 import java.io.File;
 import java.util.LinkedList;
+import java.util.ConcurrentModificationException;
 
 PImage imgt;
 Jimg jt;
@@ -139,5 +140,6 @@ void tick(){
     if(kb.pressed(kb.ROTATE_DOWN)){
       cam.rotate(0,1);
     }
+    entities.tick();
     //println("" + noise(-100,-100) + " " + noise(100,100));
 }

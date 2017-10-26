@@ -63,6 +63,10 @@ abstract class Entity{
     return subPos;
   }
 
+  public void moveTile(int x, int y){
+    
+  }
+
   public void show(){
     entities.toDraw(this);
   }

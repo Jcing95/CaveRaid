@@ -436,6 +436,7 @@ class Tile {
       else
       pane((x*2)+1,(y*2)+1,z,types[2],orientation,mat[3],tint);
     tint = 0xFFFFFFFF;
+    try{
     for(Entity e: entitiesTL)
       e.show();
     for(Entity e: entitiesTR)
@@ -444,6 +445,9 @@ class Tile {
       e.show();
     for(Entity e: entitiesBR)
       e.show();
+    }catch(ConcurrentModificationException e){
+      
+    }
   }
 
 }
