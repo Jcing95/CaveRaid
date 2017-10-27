@@ -81,6 +81,13 @@ class CaveLoader implements Runnable{
     println("Caveloader started!_");
   }
 
+  Chunk get(Point pos){
+    Set k = loadedChunks.keySet();
+    if(!k.contains(pos)){
+      loadedChunks.put(pos, new Chunk(pos));
+    }
+    return loadedChunks.get(pos);
+  }
 
   void update(){
     //println("cam: "+ cam.tile().x + "|" + cam.tile().y + "   " + loaded + "  floored: x" + floor(cam.tile().x/CHUNKSIZE) + " y" + floor(cam.tile().y/CHUNKSIZE));
@@ -165,10 +172,14 @@ class CaveLoader implements Runnable{
 
   void paintCave(){
     //println(loadedChunks.keySet().size());
-    for(Object p: loadedChunks.keySet()){
-      Chunk c = loadedChunks.get((Point)p);
-      if(c != null)
-        loadedChunks.get((Point)p).paint();
+    try{
+      for(Object p: loadedChunks.keySet()){
+        Chunk c = loadedChunks.get((Point)p);
+        if(c != null)
+          loadedChunks.get((Point)p).paint();
+      }
+    }catch(ConcurrentModificationException e){
+
     }
   }
 
@@ -212,10 +223,7 @@ class Cave {
   }
 
   public Tile getTile(float x, float y){
-  //  println("x" + chunkAt(x/CHUNKSIZE) + " y" + chunkAt(y/CHUNKSIZE) + "   " + world.get(new Point(x/CHUNKSIZE,y/CHUNKSIZE)));
-    if(loader.loadedChunks.get(new Point(chunkAt(x/CHUNKSIZE),chunkAt(y/CHUNKSIZE))) != null)
-      return loader.loadedChunks.get(new Point(chunkAt(x/CHUNKSIZE),chunkAt(y/CHUNKSIZE))).getTile((int)x%CHUNKSIZE,(int)y%CHUNKSIZE);
-    return null;
+    return loader.get(new Point(chunkAt(x/CHUNKSIZE),chunkAt(y/CHUNKSIZE))).getTile((int)x%CHUNKSIZE,(int)y%CHUNKSIZE);
   }
 
   void paint(){
@@ -370,9 +378,12 @@ class Tile {
     tint = col;
   }
 
-  Point occupy(Entity e, Point subPos){
-    int x = subPos.x %= 2;
-    int y = subPos.y %= 2;
+  void occupy(Entity e, Point subPos){
+    int x = subPos.x;
+    int y = subPos.y;
+    assert(x < 2 && x >= 0);
+    assert(y < 2 && x >= 0);
+
     if(x == 0 && y == 0)
       entitiesTL.add(e);
     if(x == 0 && y == 1)
@@ -381,14 +392,16 @@ class Tile {
       entitiesBL.add(e);
     if(x == 1 && y == 1)
       entitiesBR.add(e);
-      println("entitiy added " + x + " " + y + " " + entitiesTL.size());
-    return new Point(x,y);
+      //println("entitiy added x" + x + " y" + y + " size" + entitiesTL.size());
   }
 
   void removeEntity(Entity e){
     Point subPos = e.getSubPos();
-    int x = subPos.x %= 1;
-    int y = subPos.y %= 1;
+    int x = subPos.x;
+    int y = subPos.y;
+    assert(x < 2 && x >= 0);
+    assert(y < 2 && x >= 0);
+
     if(x == 0 && y == 0)
       entitiesTL.remove(e);
     if(x == 0 && y == 1)
@@ -446,7 +459,7 @@ class Tile {
     for(Entity e: entitiesBR)
       e.show();
     }catch(ConcurrentModificationException e){
-      
+
     }
   }
 

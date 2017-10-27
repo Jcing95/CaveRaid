@@ -47,24 +47,54 @@ class EntityManager{
 abstract class Entity{
 
   Point containingChunk;
-  Tile[] occupied;
+  Tile occupied;
   Point subPos;
+  Point offset;
   boolean painted;
 
   public Entity(Tile t, Point subPos){
-    occupied = new Tile[1];
-    occupied[0] = t;
-    this.subPos = t.occupy(this,subPos);
+    this.subPos = subPos;
+    occupied = t;
+    offset = new Point(0,0);
     containingChunk = t.getChunk();
     entities.addEntity(t.getChunk(),this);
+    t.occupy(this,subPos);
   }
 
   public Point getSubPos(){
     return subPos;
   }
 
+  public void addOffset(int x, int y){
+    offset.x += x;
+    offset.y += y;
+    int subPosChangeX = offset.x / PANESIZE;
+    int subPosChangeY = offset.y / PANESIZE;
+    offset.x %= PANESIZE;
+    offset.y %= PANESIZE;
+    //println("OFFSET: " + offset.x + "/" + PANESIZE + " (+" + x + ") sub: +" + subPosChangeX);
+    addSubPos(subPosChangeX, subPosChangeY);
+  }
+
+  public void addSubPos(int x, int y){
+    subPos.x += x;
+    subPos.y += y;
+    int tileChangeX = subPos.x / 2;
+    int tileChangeY = subPos.y / 2;
+    subPos.x %= 2;
+    subPos.y %= 2;
+    //println("SUBPOS: " + subPos.x + " (+" + x + ") tile: +" + tileChangeX);
+    moveToTile(occupied.x + tileChangeX, occupied.y + tileChangeY);
+  }
+
+  public void moveToTile(int x, int y){
+    occupied.removeEntity(this);
+    occupied = cave.getTile(x,y);
+    occupied.occupy(this,subPos);
+  }
+
   public void moveTile(int x, int y){
-    
+
   }
 
   public void show(){
@@ -73,7 +103,7 @@ abstract class Entity{
 
   public void painted(){
     pushMatrix();
-    translate(occupied[0].x*2*PANESIZE+subPos.x,occupied[0].y*2*PANESIZE+subPos.y, occupied[0].z*PANESIZE);
+    translate(occupied.x*2*PANESIZE+subPos.x*PANESIZE+offset.x,occupied.y*2*PANESIZE+subPos.y*PANESIZE+offset.y, occupied.z*PANESIZE);
     this.paint();
     popMatrix();
   }
